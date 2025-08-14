@@ -1,0 +1,2 @@
+command install Vendor
++ composer install
