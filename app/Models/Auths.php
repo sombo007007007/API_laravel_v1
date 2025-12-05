@@ -2,16 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Branches;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class Auths extends Model
+class Auths extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, Notifiable, HasFactory;
+
     protected $table = 'admins';
     protected $primaryKey = 'admin_id';
     public $timestamps = false;
+
     protected $fillable = [
         'admin_id',
         'image',
@@ -32,19 +35,9 @@ class Auths extends Model
         'updated_at',
         'deteled_at',
     ];
-    public function branchs(){
+
+    public function branchs()
+    {
         return $this->belongsTo(Branches::class, 'branch_id');
     }
-    // protected static function booted(){
-    //     static::creating(function ($active){
-    //         if(is_null($active->is_active)){
-    //             $active->is_active = 1;
-    //         }
-    //     });
-    //     static::updating(function ($active){
-    //         if(is_null($active->is_active)){
-    //             $active->is_active = 1;
-    //         }
-    //     });
-    // }
 }

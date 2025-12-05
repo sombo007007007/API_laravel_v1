@@ -13,12 +13,12 @@ class AuthsController extends Controller
 {
     public function register(Request $request){
         $this->validate($request, [
-            'email'=> 'required',  
+            'email'=> 'required',
             'name'=> 'required',
             'password'=> 'required',
             'phone' => 'required'
         ], [], [
-            'email'=> 'Enter Email',  
+            'email'=> 'Enter Email',
             'name'=> 'Enter Name',
             'password'=> 'Enter Password',
             'phone'=> 'Enter Phone'
@@ -36,12 +36,57 @@ class AuthsController extends Controller
             'password'=>Hash::make($request->password),
             'phone'=>$request->phone,
             // 'is_active'=>$request->is_active,
+            'remember_token'=>$request->remember_token,
             'branch_id'=>$request->branch_id,
-            'created_at'=>$now_admin 
+            'created_at'=>$now_admin
         ]);
         return response()->json([
             'Message' => 'Insert Successfully',
             'All_data_rigster'=>$Insert_register_admin
         ]);
     }
+    // Login
+    public function login(Request $request)
+    {
+        // 1. Validate
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required'
+        ]);
+
+        // 2. Fetch user by email
+        $user = Auths::where('email', $request->email)->first();
+
+        // 3. If user not found or wrong password → return error
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Invalid email or password'
+            ], 401);
+        }
+
+        // 4. Create token (Sanctum)
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // 5. Return success login response
+        return response()->json([
+            'status'  => true,
+            'message' => 'Login successful',
+            'token'   => $token,
+            'user'    => $user
+        ], 200);
+    }
+
+    // Logout (optional)
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Logged out'
+        ]);
+    }
+
+
 }

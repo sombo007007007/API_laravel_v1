@@ -17,10 +17,8 @@ use App\Http\Controllers\EvaluationsController;
 use App\Http\Controllers\AuthsController;
 use App\Http\Controllers\HomeController;
 
-
-Route::post('/v1/auth/register', [AuthsController::class, 'register']);
 Route::post('/v1/auth/login', [AuthsController::class, 'login']);
-Route::get('/v1/auth/login',[HomeController::class,'index'])->name('index');
+Route::post('/v1/auth/register', [AuthsController::class, 'register']);
 Route::middleware('auth:sanctum')->group(function () {
     // Profile
     Route::get('/v1/auth/profile', function (Request $request) {
